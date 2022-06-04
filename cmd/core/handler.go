@@ -28,3 +28,9 @@ func (s *CoreServiceImpl) DouyinFeed(ctx context.Context, req *core.DouyinFeedRe
 
 	return resp, nil
 }
+
+// DouyinPublishAction implements the CoreServiceImpl interface.
+func (s *CoreServiceImpl) DouyinPublishAction(ctx context.Context, req *core.DouyinPublishActionRequest) (resp *core.DouyinPublishActionResponse, err error) {
+	// TODO: Your code here...
+	return
+}

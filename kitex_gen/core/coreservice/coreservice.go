@@ -22,7 +22,8 @@ func NewServiceInfo() *kitex.ServiceInfo {
 	serviceName := "CoreService"
 	handlerType := (*core.CoreService)(nil)
 	methods := map[string]kitex.MethodInfo{
-		"DouyinFeed": kitex.NewMethodInfo(douyinFeedHandler, newDouyinFeedArgs, newDouyinFeedResult, false),
+		"DouyinFeed":          kitex.NewMethodInfo(douyinFeedHandler, newDouyinFeedArgs, newDouyinFeedResult, false),
+		"DouyinPublishAction": kitex.NewMethodInfo(douyinPublishActionHandler, newDouyinPublishActionArgs, newDouyinPublishActionResult, false),
 	}
 	extra := map[string]interface{}{
 		"PackageName": "core",
@@ -141,6 +142,109 @@ func (p *DouyinFeedResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
+func douyinPublishActionHandler(ctx context.Context, handler interface{}, arg, result interface{}) error {
+	switch s := arg.(type) {
+	case *streaming.Args:
+		st := s.Stream
+		req := new(core.DouyinPublishActionRequest)
+		if err := st.RecvMsg(req); err != nil {
+			return err
+		}
+		resp, err := handler.(core.CoreService).DouyinPublishAction(ctx, req)
+		if err != nil {
+			return err
+		}
+		if err := st.SendMsg(resp); err != nil {
+			return err
+		}
+	case *DouyinPublishActionArgs:
+		success, err := handler.(core.CoreService).DouyinPublishAction(ctx, s.Req)
+		if err != nil {
+			return err
+		}
+		realResult := result.(*DouyinPublishActionResult)
+		realResult.Success = success
+	}
+	return nil
+}
+func newDouyinPublishActionArgs() interface{} {
+	return &DouyinPublishActionArgs{}
+}
+
+func newDouyinPublishActionResult() interface{} {
+	return &DouyinPublishActionResult{}
+}
+
+type DouyinPublishActionArgs struct {
+	Req *core.DouyinPublishActionRequest
+}
+
+func (p *DouyinPublishActionArgs) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetReq() {
+		return out, fmt.Errorf("No req in DouyinPublishActionArgs")
+	}
+	return proto.Marshal(p.Req)
+}
+
+func (p *DouyinPublishActionArgs) Unmarshal(in []byte) error {
+	msg := new(core.DouyinPublishActionRequest)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Req = msg
+	return nil
+}
+
+var DouyinPublishActionArgs_Req_DEFAULT *core.DouyinPublishActionRequest
+
+func (p *DouyinPublishActionArgs) GetReq() *core.DouyinPublishActionRequest {
+	if !p.IsSetReq() {
+		return DouyinPublishActionArgs_Req_DEFAULT
+	}
+	return p.Req
+}
+
+func (p *DouyinPublishActionArgs) IsSetReq() bool {
+	return p.Req != nil
+}
+
+type DouyinPublishActionResult struct {
+	Success *core.DouyinPublishActionResponse
+}
+
+var DouyinPublishActionResult_Success_DEFAULT *core.DouyinPublishActionResponse
+
+func (p *DouyinPublishActionResult) Marshal(out []byte) ([]byte, error) {
+	if !p.IsSetSuccess() {
+		return out, fmt.Errorf("No req in DouyinPublishActionResult")
+	}
+	return proto.Marshal(p.Success)
+}
+
+func (p *DouyinPublishActionResult) Unmarshal(in []byte) error {
+	msg := new(core.DouyinPublishActionResponse)
+	if err := proto.Unmarshal(in, msg); err != nil {
+		return err
+	}
+	p.Success = msg
+	return nil
+}
+
+func (p *DouyinPublishActionResult) GetSuccess() *core.DouyinPublishActionResponse {
+	if !p.IsSetSuccess() {
+		return DouyinPublishActionResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+func (p *DouyinPublishActionResult) SetSuccess(x interface{}) {
+	p.Success = x.(*core.DouyinPublishActionResponse)
+}
+
+func (p *DouyinPublishActionResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
 type kClient struct {
 	c client.Client
 }
@@ -156,6 +260,16 @@ func (p *kClient) DouyinFeed(ctx context.Context, Req *core.DouyinFeedRequest) (
 	_args.Req = Req
 	var _result DouyinFeedResult
 	if err = p.c.Call(ctx, "DouyinFeed", &_args, &_result); err != nil {
+		return
+	}
+	return _result.GetSuccess(), nil
+}
+
+func (p *kClient) DouyinPublishAction(ctx context.Context, Req *core.DouyinPublishActionRequest) (r *core.DouyinPublishActionResponse, err error) {
+	var _args DouyinPublishActionArgs
+	_args.Req = Req
+	var _result DouyinPublishActionResult
+	if err = p.c.Call(ctx, "DouyinPublishAction", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil

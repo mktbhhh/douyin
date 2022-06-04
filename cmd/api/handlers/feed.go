@@ -4,6 +4,7 @@ import (
 	"context"
 	"douyin/cmd/api/rpc"
 	"douyin/kitex_gen/core"
+	"douyin/pkg/errno"
 	"net/http"
 	"time"
 
@@ -22,18 +23,23 @@ func DouyinFeed(c *gin.Context) {
 
 	videoList, err := rpc.DouyinFeed(context.Background(), req)
 	if err != nil {
+		Err := errno.ConvertErr(err)
 		c.JSON(http.StatusOK, FeedResponse{
 			Response: Response{
-				StatusCode: 100,
-				StatusMsg:  "feed失败",
+				Code:    Err.ErrCode,
+				Message: Err.ErrMsg,
 			},
 			VideoList: nil,
 			NextTime:  time.Now().Unix(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, FeedResponse{
-		Response:  Response{StatusCode: 0},
+		Response: Response{
+			Code:    errno.Success.ErrCode,
+			Message: errno.Success.ErrMsg,
+		},
 		VideoList: videoList,
 		NextTime:  time.Now().Unix(),
 	})

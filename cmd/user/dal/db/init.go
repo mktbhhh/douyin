@@ -5,7 +5,6 @@ import (
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"gorm.io/gorm/schema"
 	gormopentracing "gorm.io/plugin/opentracing"
 )
 
@@ -18,28 +17,21 @@ func Init() {
 		&gorm.Config{
 			PrepareStmt:            true,
 			SkipDefaultTransaction: true,
-			NamingStrategy: schema.NamingStrategy{
-				SingularTable: true,
-			},
 		},
 	)
 	if err != nil {
 		panic(err)
 	}
 
-	// DB.SingularTable(true)
-
 	if err = DB.Use(gormopentracing.New()); err != nil {
 		panic(err)
 	}
 
 	m := DB.Migrator()
-	if m.HasTable(&Video{}) {
+	if m.HasTable(&User{}) {
 		return
 	}
-
-	if err = m.CreateTable(&Video{}); err != nil {
+	if err = m.CreateTable(&User{}); err != nil {
 		panic(err)
 	}
-
 }

@@ -12,6 +12,7 @@ import (
 // Client is designed to provide IDL-compatible methods with call-option parameter for kitex framework.
 type Client interface {
 	DouyinFeed(ctx context.Context, Req *core.DouyinFeedRequest, callOptions ...callopt.Option) (r *core.DouyinFeedResponse, err error)
+	DouyinPublishAction(ctx context.Context, Req *core.DouyinPublishActionRequest, callOptions ...callopt.Option) (r *core.DouyinPublishActionResponse, err error)
 }
 
 // NewClient creates a client for the service defined in IDL.
@@ -46,4 +47,9 @@ type kCoreServiceClient struct {
 func (p *kCoreServiceClient) DouyinFeed(ctx context.Context, Req *core.DouyinFeedRequest, callOptions ...callopt.Option) (r *core.DouyinFeedResponse, err error) {
 	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
 	return p.kClient.DouyinFeed(ctx, Req)
+}
+
+func (p *kCoreServiceClient) DouyinPublishAction(ctx context.Context, Req *core.DouyinPublishActionRequest, callOptions ...callopt.Option) (r *core.DouyinPublishActionResponse, err error) {
+	ctx = client.NewCtxWithCallOptions(ctx, callOptions)
+	return p.kClient.DouyinPublishAction(ctx, Req)
 }
