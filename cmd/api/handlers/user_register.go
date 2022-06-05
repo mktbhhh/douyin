@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"context"
+	"douyin/cmd/api/middleware"
+	"douyin/cmd/api/param"
 	"douyin/cmd/api/rpc"
 	"douyin/kitex_gen/user"
 	"douyin/pkg/errno"
@@ -15,40 +17,46 @@ const (
 	ErrToken  = "err"
 )
 
-func UserRegisterSeedResponse(c *gin.Context, err error, user_id int64, token string) {
+func UserRegisterSeedResp(c *gin.Context, err error, user_id int64, token string) {
 	Err := errno.ConvertErr(err)
-	c.JSON(http.StatusOK, UserRegisterResponse{
-		Response: Response{
+	c.JSON(http.StatusOK, param.UserRegisterResp{
+		Resp: param.Resp{
 			Code:    Err.ErrCode,
 			Message: Err.ErrMsg,
 		},
-		user_id: user_id,
-		token:   token,
+		UserId: user_id,
+		Token:  token,
 	})
 }
 
 // UserRegister register user info
 func UserRegister(c *gin.Context) {
-
-	var registerVar UserRegisterParam
+	var registerVar param.UserRegisterParam
 	if err := c.ShouldBind(&registerVar); err != nil {
-		UserRegisterSeedResponse(c, errno.ConvertErr(err), ErrUserId, ErrToken)
+		UserRegisterSeedResp(c, err, ErrUserId, ErrToken)
 		return
 	}
 
 	if len(registerVar.UserName) == 0 || len(registerVar.PassWord) == 0 {
-		UserRegisterSeedResponse(c, errno.ParamErr, ErrUserId, ErrToken)
+		UserRegisterSeedResp(c, errno.ParamErr, ErrUserId, ErrToken)
 		return
 	}
 
-	resp, err := rpc.UserRegister(context.Background(), &user.DouyinUserRegisterRequest{
+	userId, err := rpc.UserRegister(context.Background(), &user.DouyinUserRegisterRequest{
 		UserName: registerVar.UserName,
 		Password: registerVar.PassWord,
 	})
 	if err != nil {
-		UserRegisterSeedResponse(c, errno.ConvertErr(err), ErrUserId, ErrToken)
+		UserRegisterSeedResp(c, err, ErrUserId, ErrToken)
 		return
 	}
 
-	UserRegisterSeedResponse(c, errno.Success, resp.UserId, resp.Token)
+	mw := middleware.AuthMiddleware
+	tokenString, _, err := mw.TokenGenerator(userId)
+	if err != nil {
+		UserRegisterSeedResp(c, err, userId, ErrToken)
+		return
+	}
+
+	UserRegisterSeedResp(c, errno.Success, userId, tokenString)
 }

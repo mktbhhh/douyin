@@ -28,13 +28,12 @@ func (s *UserServiceImpl) UserRegister(ctx context.Context, req *user.DouyinUser
 	resp.BaseResp = pack.BuildBaseResp(errno.Success)
 
 	// 创建用户成功，获取用户id和token
-	userId, token, err := service.NewUserRegisterService(ctx).GetId(req.UserName)
+	userId, err := service.NewUserRegisterService(ctx).GetId(req.UserName)
 	if err != nil {
 		resp.BaseResp = pack.BuildBaseResp(err)
 		return resp, nil
 	}
 	resp.UserId = userId
-	resp.Token = token
 
 	return resp, nil
 }
@@ -47,6 +46,39 @@ func (s *UserServiceImpl) UserLogin(ctx context.Context, req *user.DouyinUserLog
 
 // UserInfo implements the UserServiceImpl interface.
 func (s *UserServiceImpl) UserInfo(ctx context.Context, req *user.DouyinUserRequest) (resp *user.DouyinUserResponse, err error) {
-	// TODO: Your code here...
-	return
+	resp = new(user.DouyinUserResponse)
+
+	if req.UserId <= 0 {
+		resp.BaseResp = pack.BuildBaseResp(errno.ParamErr)
+		return resp, nil
+	}
+
+	userById, err := service.NewUserInfoService(ctx).GetUserInfoById(req.UserId)
+	if err != nil {
+		resp.BaseResp = pack.BuildBaseResp(err)
+		return resp, nil
+	}
+	resp.BaseResp = pack.BuildBaseResp(errno.Success)
+	resp.User = pack.User(userById)
+
+	return resp, nil
+}
+
+// CheckUser implements the UserServiceImpl interface.
+func (s *UserServiceImpl) CheckUser(ctx context.Context, req *user.CheckUserRequest) (resp *user.CheckUserResponse, err error) {
+	resp = new(user.CheckUserResponse)
+
+	if len(req.UserName) == 0 || len(req.Password) == 0 {
+		resp.BaseResp = pack.BuildBaseResp(errno.ParamErr)
+		return resp, nil
+	}
+
+	uid, err := service.NewCheckUserService(ctx).CheckUser(req)
+	if err != nil {
+		resp.BaseResp = pack.BuildBaseResp(err)
+		return resp, nil
+	}
+	resp.UserId = uid
+	resp.BaseResp = pack.BuildBaseResp(errno.Success)
+	return resp, nil
 }

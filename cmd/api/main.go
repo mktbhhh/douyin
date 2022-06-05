@@ -1,8 +1,8 @@
 package main
 
 import (
+	"douyin/cmd/api/middleware"
 	"douyin/cmd/api/rpc"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,6 +12,7 @@ func Init() {
 
 func main() {
 	Init()
+	middleware.InitJWT()
 	r := gin.Default()
 
 	initRouter(r)

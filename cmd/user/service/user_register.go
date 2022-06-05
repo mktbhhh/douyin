@@ -46,15 +46,15 @@ func (s *UserRegisterService) UserRegister(req *user.DouyinUserRegisterRequest) 
 	}})
 }
 
-func (s *UserRegisterService) GetId(userName string) (int64, string, error) {
-	user, err := db.GetUserByUserName(s.ctx, userName)
+func (s *UserRegisterService) GetId(userName string) (int64, error) {
+	userByUserName, err := db.GetUserByUserName(s.ctx, userName)
 	if err != nil {
-		return ErrId, ErrToken, err
+		return ErrId, err
 	}
 
-	if user == nil {
-		return ErrId, ErrToken, errors.New("db register error")
+	if userByUserName == nil {
+		return ErrId, errors.New("db register error")
 	}
 
-	return int64(user.ID), "token", nil
+	return int64(userByUserName.ID), nil
 }

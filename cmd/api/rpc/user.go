@@ -28,13 +28,36 @@ func initUserRpc() {
 }
 
 // UserRegister create user info
-func UserRegister(ctx context.Context, req *user.DouyinUserRegisterRequest) (*user.DouyinUserRegisterResponse, error) {
+func UserRegister(ctx context.Context, req *user.DouyinUserRegisterRequest) (int64, error) {
 	resp, err := userClient.UserRegister(ctx, req)
+	if err != nil {
+		return resp.UserId, err
+	}
+	if resp.BaseResp.StatusCode != 0 {
+		return resp.UserId, errno.NewErrNo(resp.BaseResp.StatusCode, resp.BaseResp.StatusMessage)
+	}
+	return resp.UserId, nil
+}
+
+// CheckUser check user info
+func CheckUser(ctx context.Context, req *user.CheckUserRequest) (int64, error) {
+	resp, err := userClient.CheckUser(ctx, req)
+	if err != nil {
+		return 0, err
+	}
+	if resp.BaseResp.StatusCode != 0 {
+		return 0, errno.NewErrNo(resp.BaseResp.StatusCode, resp.BaseResp.StatusMessage)
+	}
+	return resp.UserId, nil
+}
+
+func UserInfo(ctx context.Context, req *user.DouyinUserRequest) (*user.User, error) {
+	resp, err := userClient.UserInfo(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 	if resp.BaseResp.StatusCode != 0 {
 		return nil, errno.NewErrNo(resp.BaseResp.StatusCode, resp.BaseResp.StatusMessage)
 	}
-	return resp, nil
+	return resp.User, nil
 }

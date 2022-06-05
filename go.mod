@@ -3,19 +3,23 @@ module douyin
 go 1.18
 
 require (
-	github.com/cloudwego/kitex v0.3.1
+	github.com/cloudwego/kitex v0.3.2
 	github.com/gin-gonic/gin v1.8.0
+	github.com/unknwon/com v1.0.1
 	google.golang.org/protobuf v1.28.0
 	gorm.io/driver/mysql v1.3.4
 	gorm.io/gorm v1.23.5
 	gorm.io/plugin/opentracing v0.0.0-20211220013347-7d2b2af23560
 )
 
+require github.com/golang-jwt/jwt/v4 v4.2.0 // indirect
+
 require (
 	github.com/apache/thrift v0.13.0 // indirect
-	github.com/bytedance/gopkg v0.0.0-20220413063733-65bf48ffb3a7 // indirect
+	github.com/appleboy/gin-jwt/v2 v2.8.0
+	github.com/bytedance/gopkg v0.0.0-20220509134931-d1878f638986 // indirect
 	github.com/choleraehyq/pid v0.0.13 // indirect
-	github.com/cloudwego/netpoll v0.2.2 // indirect
+	github.com/cloudwego/netpoll v0.2.4 // indirect
 	github.com/cloudwego/thriftgo v0.1.2 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
@@ -33,7 +37,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.1 // indirect
-	github.com/tidwall/gjson v1.9.3 // indirect
+	github.com/tidwall/gjson v1.12.1 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect

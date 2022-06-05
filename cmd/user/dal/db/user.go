@@ -3,8 +3,6 @@ package db
 import (
 	"context"
 	"douyin/pkg/constants"
-	"fmt"
-
 	"gorm.io/gorm"
 )
 
@@ -43,7 +41,6 @@ func CreateUser(ctx context.Context, users []*User) error {
 // QueryUser query list of user info
 func QueryUser(ctx context.Context, userName string) ([]*User, error) {
 	res := make([]*User, 0)
-	fmt.Println(userName)
 	if err := DB.WithContext(ctx).Where("user_name = ?", userName).Find(&res).Error; err != nil {
 		return nil, err
 	}
@@ -52,8 +49,15 @@ func QueryUser(ctx context.Context, userName string) ([]*User, error) {
 
 func GetUserByUserName(ctx context.Context, userName string) (*User, error) {
 	var res *User
-	fmt.Println(userName)
 	if err := DB.WithContext(ctx).Where("user_name = ?", userName).Find(&res).Error; err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func GetUserById(ctx context.Context, userId int64) (*User, error) {
+	var res *User
+	if err := DB.WithContext(ctx).Where("id = ?", userId).Find(&res).Error; err != nil {
 		return nil, err
 	}
 	return res, nil

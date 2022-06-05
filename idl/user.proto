@@ -17,7 +17,6 @@ message BaseResp {
 }
 
 message douyin_user_register_request {
-
     string user_name = 1;
     string password = 2;
 }
@@ -25,7 +24,6 @@ message douyin_user_register_request {
 message douyin_user_register_response {
     BaseResp base_resp = 1;
     int64 user_id = 2;
-    string token = 3;
 }
 
 message douyin_user_login_request {
@@ -36,12 +34,10 @@ message douyin_user_login_request {
 message douyin_user_login_response {
     BaseResp base_resp = 1;
     int64 user_id = 2;
-    string token = 3;
 }
 
 message douyin_user_request {
     int64 user_id = 1;
-    string token = 2;
 }
 
 message douyin_user_response {
@@ -49,8 +45,19 @@ message douyin_user_response {
     User user = 2;
 }
 
+message CheckUserRequest{
+    string user_name = 1;
+    string password = 2;
+}
+
+message CheckUserResponse{
+    int64 user_id = 1;
+    BaseResp base_resp = 2;
+}
+
 service UserService {
-    rpc UserRegister (douyin_user_register_request) returns (douyin_user_register_response);
-    rpc UserLogin (douyin_user_login_request) returns (douyin_user_login_response);
-    rpc UserInfo (douyin_user_request) returns (douyin_user_response);
+    rpc UserRegister (douyin_user_register_request) returns (douyin_user_register_response) {}
+    rpc UserLogin (douyin_user_login_request) returns (douyin_user_login_response) {}
+    rpc UserInfo (douyin_user_request) returns (douyin_user_response) {}
+    rpc CheckUser (CheckUserRequest) returns (CheckUserResponse) {}
 }
